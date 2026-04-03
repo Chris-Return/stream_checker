@@ -26,4 +26,7 @@ jobs:
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
           TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
           MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
-        run: python check_and_run.py
+          STREAMER_NAME: ${{ secrets.STREAMER_NAME }}
+          REPO_CIBLE: ${{ secrets.REPO_CIBLE }}
+          WORKFLOW_ID: ${{ secrets.WORKFLOW_ID }}
+        run: python main.py
