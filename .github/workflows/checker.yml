@@ -1,0 +1,29 @@
+name: Check Twitch and Run Target
+on:
+  schedule:
+    # 7h-22h France (UTC+1 en hiver, UTC+2 en été)
+    # On prend une marge : 05:00 à 21:00 UTC pour couvrir les deux périodes
+    - cron: '*/10 5-21 * * *'
+  workflow_dispatch: # Pour tester manuellement quand tu veux
+
+jobs:
+  check-and-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Execute Script
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          MY_GITHUB_PAT: ${{ secrets.MY_GITHUB_PAT }}
+        run: python check_and_run.py
