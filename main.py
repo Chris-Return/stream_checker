@@ -11,9 +11,6 @@ GITHUB_PAT = os.getenv('MY_GITHUB_PAT')
 REPO_CIBLE = os.getenv('REPO_CIBLE')
 WORKFLOW_ID = os.getenv('WORKFLOW_ID')
 
-# Intervalle de vérification (3 minutes = 180 secondes)
-CHECK_INTERVAL = 180
-
 def get_twitch_token():
     """Récupère un jeton d'accès Twitch."""
     auth_res = requests.post(
@@ -42,7 +39,7 @@ def is_workflow_already_running():
         return len(runs) > 0
     except Exception as e:
         print(f"Erreur lors de la vérification GitHub : {e}")
-        return True # On préfère ne pas relancer en cas d'erreur API
+        return True
 
 def trigger_workflow():
     """Déclenche le workflow GitHub."""
@@ -56,24 +53,19 @@ def trigger_workflow():
         print(f"❌ Erreur lors du lancement : {res.status_code}, {res.text}", flush=True)
 
 def main():
-    print(f"Démarrage du monitoring pour {STREAMER_NAME}...", flush=True)
+    print(f"Vérification ponctuelle pour {STREAMER_NAME}...", flush=True)
     
-    while True:
-        # On récupère un nouveau token à chaque cycle ou on gère sa validité
-        token = get_twitch_token()
+    token = get_twitch_token()
+    
+    if token and is_streamer_live(token):
+        print(f"[{time.strftime('%H:%M:%S')}] {STREAMER_NAME} est en LIVE.")
         
-        if token and is_streamer_live(token):
-            print(f"[{time.strftime('%H:%M:%S')}] {STREAMER_NAME} est en LIVE.", flush=True)
-            
-            if not is_workflow_already_running():
-                trigger_workflow()
-            else:
-                print("Le workflow tourne déjà, pause...", flush=True)
+        if not is_workflow_already_running():
+            trigger_workflow()
         else:
-            print(f"[{time.strftime('%H:%M:%S')}] {STREAMER_NAME} est hors ligne.", flush=True)
-        
-        # Attente avant la prochaine vérification
-        time.sleep(CHECK_INTERVAL)
+            print("Le workflow tourne déjà. Fin du script.", flush=True)
+    else:
+        print(f"[{time.strftime('%H:%M:%S')}] {STREAMER_NAME} est hors ligne. Fin du script.", flush=True)
 
 if __name__ == "__main__":
     main()
