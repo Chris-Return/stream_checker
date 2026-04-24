@@ -3,7 +3,7 @@ on:
   schedule:
     # 7h-22h France (UTC+1 en hiver, UTC+2 en été)
     # On prend une marge : 05:00 à 21:00 UTC pour couvrir les deux périodes
-    - cron: '*/10 5-21 * * *'
+    - cron: '*/11 5-21 * * *'
   workflow_dispatch: # Pour tester manuellement quand tu veux
 
 jobs:
